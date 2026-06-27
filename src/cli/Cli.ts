@@ -17,9 +17,10 @@ export class Cli {
 
 
 
-    constructor() {
+    constructor(agent: AutomationAgent) {
 
-        this.agent = new AutomationAgent();
+        // Reuse initialized agent
+        this.agent = agent;
 
 
         this.rl = readline.createInterface({
@@ -85,6 +86,8 @@ export class Cli {
                         console.log("Goodbye 👋");
 
                         this.rl.close();
+
+                        process.exit(0);
 
                     }
                 );

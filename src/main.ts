@@ -3,6 +3,7 @@ import inquirer from "inquirer";
 import { Cli } from "./cli/Cli.js";
 import { ConfigManager } from "./config/ConfigManager.js";
 import { runSetupWizard } from "./cli/SetupWizard.js";
+import { AutomationAgent } from "./agent/AutomationAgent.js";
 
 
 async function bootstrap() {
@@ -78,8 +79,18 @@ async function bootstrap() {
 
 
 
+    // Create agent once
+    const agent = new AutomationAgent();
+
+
+    // Load MCP tools once
+    await agent.initialize();
+
+
+
+    // Pass same agent to CLI
     const cli =
-        new Cli();
+        new Cli(agent);
 
 
     cli.start();

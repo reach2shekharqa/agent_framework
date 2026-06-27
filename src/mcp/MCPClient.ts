@@ -1,22 +1,65 @@
-import { MCPTool } from "./MCPTypes.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
 
 export class MCPClient {
 
-    public async connect(): Promise<void> {
+    private client!: Client;
 
-        console.log("MCP Client Connected");
+
+    async connect(
+        command:string,
+        args:string[]
+    ){
+
+        const transport =
+            new StdioClientTransport({
+                command,
+                args
+            });
+
+
+        this.client = new Client(
+            {
+                name:"automation-agent",
+                version:"1.0.0"
+            },
+            {
+                capabilities:{}
+            }
+        );
+
+
+        await this.client.connect(
+            transport
+        );
+
+
+        console.log(
+          "Connected MCP server"
+        );
 
     }
 
-    public async disconnect(): Promise<void> {
 
-        console.log("MCP Client Disconnected");
+
+    async listTools(){
+
+        return await this.client.listTools();
 
     }
 
-    public async listTools(): Promise<MCPTool[]> {
 
-        return [];
+
+    async callTool(
+        name:string,
+        args:any
+    ){
+
+        return await this.client.callTool({
+            name,
+            arguments:args
+        });
 
     }
 

@@ -46,8 +46,6 @@ For AI assistance, type your question directly.
 
             case "exit":
 
-                console.log("Goodbye 👋");
-
                 onExit();
 
                 return true;
