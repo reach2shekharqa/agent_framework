@@ -1,13 +1,13 @@
 import readline from "node:readline";
-import { Agent } from "../agent/AutomationAgent.js";
+import { AutomationAgent } from "../agent/AutomationAgent.js";
 
 export class Cli {
 
-    private readonly agent: Agent;
+    private readonly agent: AutomationAgent;
     private readonly rl: readline.Interface;
 
     constructor() {
-        this.agent = new Agent();
+        this.agent = new AutomationAgent();
 
         this.rl = readline.createInterface({
             input: process.stdin,
@@ -36,7 +36,7 @@ export class Cli {
                 return;
             }
 
-            const response = await this.agent.handle(
+            const response = await this.agent.run(
                 input.trim()
             );
 

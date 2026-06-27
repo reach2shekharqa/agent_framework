@@ -6,41 +6,53 @@ export class GroqProvider implements AIProvider {
 
 
     constructor(
-        private baseUrl: string,
         private apiKey: string,
         private model: string
-    ) {}
+    ) { }
 
 
-    async chat(messages: any[]): Promise<any> {
+
+    async chat(
+        messages: any[],
+        tools?: any[]
+    ) {
 
 
-        const response = await axios.post(
+        const response =
+            await axios.post(
 
-            this.baseUrl,
+                "https://api.groq.com/openai/v1/chat/completions",
 
-            {
-                model: this.model,
-                messages,
-                temperature: 0,
-                max_tokens: 500,
-                stream: false
-            },
+                {
 
-            {
-                headers: {
+                    model: this.model,
 
-                    Authorization: `Bearer ${this.apiKey}`,
-                    "Content-Type": "application/json"
+                    messages,
+
+                    tools,
+
+                    temperature: 0.2
+
+                },
+
+                {
+
+                    headers: {
+                        Authorization:
+                            `Bearer ${this.apiKey}`
+                    }
 
                 }
-            }
 
-        );
+            );
 
 
-        return response.data.choices[0].message;
+        return response.data
+            .choices[0]
+            .message;
+
 
     }
+
 
 }

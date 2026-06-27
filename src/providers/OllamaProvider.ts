@@ -6,29 +6,41 @@ export class OllamaProvider implements AIProvider {
 
 
     constructor(
-        private baseUrl:string,
-        private model:string
-    ){}
+        private model: string
+    ) { }
 
 
-    async chat(messages:any[]):Promise<any>{
+
+    async chat(
+        messages: any[],
+        tools?: any[]
+    ) {
 
 
-        const response = await axios.post(
+        const response =
+            await axios.post(
 
-            this.baseUrl,
+                "http://localhost:11434/api/chat",
 
-            {
-                model:this.model,
-                messages,
-                stream:false
-            }
+                {
 
-        );
+                    model: this.model,
+
+                    messages,
+
+                    stream: false,
+
+                    tools
+
+                }
+
+            );
 
 
         return response.data.message;
 
+
     }
+
 
 }

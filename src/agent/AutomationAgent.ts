@@ -1,110 +1,109 @@
-import { askAI } from "../ai/AI.js";
-import { executeTool } from "../tools/tools.js";
+import { AI } from "../ai/AI.js";
+import {
+    executeTool,
+    toolDefinitions
+} from "../tools/tools.js";
 
 
-export class Agent {
-
-    private readonly systemPrompt = `
-You are a software automation agent.
-When reporting tool results:
-- Be concise.
-- Do not explain common files unless asked.
-- Focus on actionable information.
-`;
+export class AutomationAgent {
 
 
-    public async handle(input: string): Promise<string> {
-
-
-        const command = input.trim().toLowerCase();
-
-
-        switch (command) {
-
-
-            case "help":
-
-                return `
-Available Commands
-
-help
-clear
-exit
-`;
+    private ai =
+        new AI();
 
 
 
-            default:
-
-                return await this.runAgent(input);
-
-        }
-
-    }
+    async run(input: string) {
 
 
+        const messages: any[] = [
 
-    private async runAgent(
-        input:string
-    ):Promise<string>{
+            {
+                role: "system",
+                content:
+                    `
+You are an AI automation engineer.
 
+Rules:
+- Use tools only when required.
+- Do not recursively explore folders unless the user asks.
+- For "list files" only inspect the requested directory.
+- Keep tool calls minimal.
+`
+            },
 
-        let response:any =
-            await askAI(
-                this.systemPrompt,
-                input
-            );
+            {
+                role: "user",
+                content: input
+            }
 
-
-
-        while(response.tool_calls){
-
-
-            for(const toolCall of response.tool_calls){
-
-
-                const toolName =
-                    toolCall.function.name;
+        ];
 
 
 
-                const args =
-                    JSON.parse(
-                        toolCall.function.arguments
-                    );
+        while (true) {
+
+
+            const response =
+                await this.ai.chat(messages, toolDefinitions);
+
+
+            // console.log(
+            //     "AI RESPONSE:",
+            //     JSON.stringify(response, null, 2)
+            // );
 
 
 
-                console.log(
-                    `🔧 Executing tool: ${toolName}`
-                );
+            if (response.tool_calls) {
 
 
 
-                const result =
-                    await executeTool(
-                        toolName,
-                        args
-                    );
+                messages.push(response);
 
 
 
-                response =
-    await askAI(
-        this.systemPrompt,
-        `The tool execution result is:
+                for (const call of response.tool_calls) {
 
-${result}
 
-Explain this result to the user.`
-    );
+                    const result =
+                        await executeTool(
+                            call.function.name,
+                            JSON.parse(
+                                call.function.arguments
+                            )
+                        );
+
+
+
+                    messages.push({
+
+                        role: "tool",
+
+                        tool_call_id:
+                            call.id,
+
+                        content:
+                            JSON.stringify(result)
+
+                    });
+
+
+                }
+
+
+                continue;
 
             }
 
+
+
+            return response.content;
+
+
         }
 
 
-        return response.content || "";
 
     }
 

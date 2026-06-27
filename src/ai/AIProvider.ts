@@ -1,5 +1,10 @@
 export interface AIProvider {
 
-    chat(messages: any[]): Promise<any>;
+
+    chat(
+        messages:any[],
+        tools?:any[]
+    ):Promise<any>;
+
 
 }

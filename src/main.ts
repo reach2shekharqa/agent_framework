@@ -1,47 +1,66 @@
 import inquirer from "inquirer";
+
 import { Cli } from "./cli/Cli.js";
-import { runSetupWizard } from "./cli/SetupWizard.js";
 import { ConfigManager } from "./config/ConfigManager.js";
+import { runSetupWizard } from "./cli/SetupWizard.js";
 
 
-async function bootstrap(){
+async function bootstrap() {
 
 
-    if(ConfigManager.exists()){
+    if (ConfigManager.exists()) {
 
 
-        const answer = await inquirer.prompt([
-            {
-                type:"select",
-                name:"action",
-                message:"Configuration found. What do you want to do?",
-                choices:[
-                    {
-                        name:"Continue with existing configuration",
-                        value:"continue"
-                    },
-                    {
-                        name:"Change AI configuration",
-                        value:"change"
-                    },
-                    {
-                        name:"Exit",
-                        value:"exit"
-                    }
-                ]
-            }
-        ]);
+        const { action } =
+            await inquirer.prompt([
+
+                {
+                    type: "select",
+
+                    name: "action",
+
+                    message:
+                        "Configuration found. What do you want to do?",
+
+                    choices: [
+
+                        {
+                            name:
+                                "Continue with existing configuration",
+
+                            value: "continue"
+                        },
+
+                        {
+                            name:
+                                "Change AI configuration",
+
+                            value: "change"
+                        },
+
+                        {
+                            name:
+                                "Exit",
+
+                            value: "exit"
+                        }
+
+                    ]
+
+                }
+
+            ]);
 
 
 
-        if(answer.action==="change"){
+        if (action === "change") {
 
             await runSetupWizard();
 
         }
 
 
-        if(answer.action==="exit"){
+        if (action === "exit") {
 
             process.exit(0);
 
@@ -49,20 +68,24 @@ async function bootstrap(){
 
 
     }
-    else{
+    else {
 
 
         await runSetupWizard();
+
 
     }
 
 
 
-    const cli = new Cli();
+    const cli =
+        new Cli();
+
 
     cli.start();
 
 }
+
 
 
 bootstrap();

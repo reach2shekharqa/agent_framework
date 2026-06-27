@@ -1,55 +1,55 @@
-import { AIProvider } from "./AIProvider.js";
-
-import { GroqProvider } from "../providers/GroqProvider.js";
-import { NvidiaProvider } from "../providers/NvidiaProvider.js";
-import { OllamaProvider } from "../providers/OllamaProvider.js";
-
 import { UserConfig } from "../config/UserConfig.js";
+import { NvidiaProvider } from "../providers/NvidiaProvider.js";
+import { GroqProvider } from "../providers/GroqProvider.js";
+import { OllamaProvider } from "../providers/OllamaProvider.js";
 
 
 export class ProviderFactory {
 
 
-    static create(config: UserConfig): AIProvider {
+    static create(
+        config: UserConfig
+    ) {
 
 
-        switch(config.provider) {
-
-
-            case "groq":
-
-                return new GroqProvider(
-                    config.baseUrl,
-                    config.apiKey!,
-                    config.model
-                );
+        switch (config.provider) {
 
 
             case "nvidia":
 
                 return new NvidiaProvider(
-                    config.baseUrl,
                     config.apiKey!,
-                    config.model
+                    config.model!
+                );
+
+
+            case "groq":
+
+                return new GroqProvider(
+                    config.apiKey!,
+                    config.model!
                 );
 
 
             case "ollama":
 
                 return new OllamaProvider(
-                    config.baseUrl,
-                    config.model
+                    config.model!
                 );
 
 
             default:
 
                 throw new Error(
-                    `Unsupported AI provider: ${config.provider}`
+                    `Unsupported provider ${config.provider}`
                 );
+
 
         }
 
+
+
     }
+
 
 }
