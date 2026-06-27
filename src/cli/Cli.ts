@@ -1,5 +1,5 @@
 import readline from "node:readline";
-import { Agent } from "../agent/Agent.js";
+import { Agent } from "../agent/AutomationAgent.js";
 
 export class Cli {
 
@@ -36,7 +36,9 @@ export class Cli {
                 return;
             }
 
-            const response = await this.agent.handle(input);
+            const response = await this.agent.handle(
+                input.trim()
+            );
 
             console.log(response);
 
