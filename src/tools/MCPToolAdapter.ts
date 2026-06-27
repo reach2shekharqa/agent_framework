@@ -5,17 +5,19 @@ import { MCPClient } from "../mcp/MCPClient.js";
 export class MCPToolAdapter implements Tool {
 
 
-    name:string;
+    name: string;
 
-    description:string;
+    description: string;
 
-    parameters:any;
+    parameters: any;
+
 
 
     constructor(
-        private client:MCPClient,
-        private definition:any
-    ){
+        private client: MCPClient,
+        private definition: any
+    ) {
+
 
         this.name =
             definition.name;
@@ -26,13 +28,16 @@ export class MCPToolAdapter implements Tool {
 
 
         this.parameters =
-            definition.inputSchema;
+            definition.inputSchema || {};
 
     }
 
 
 
-    async execute(args:any){
+
+
+    async execute(args: any): Promise<any> {
+
 
         return await this.client.callTool(
 
