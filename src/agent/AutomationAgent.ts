@@ -1,16 +1,15 @@
-import { askAI } from "../agent/AI.js";
+import { askAI } from "../ai/AI.js";
 import { executeTool } from "../tools/tools.js";
 
 
 export class Agent {
 
     private readonly systemPrompt = `
-You are an AI Automation Agent.
-
-You help users understand repositories, execute automation tasks,
-and use tools whenever required.
-
-Always use the available tools instead of guessing.
+You are a software automation agent.
+When reporting tool results:
+- Be concise.
+- Do not explain common files unless asked.
+- Focus on actionable information.
 `;
 
 
