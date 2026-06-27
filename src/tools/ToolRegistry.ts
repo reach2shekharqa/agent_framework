@@ -1,72 +1,134 @@
+import { Tool } from "./types.js";
 import { tools } from "./index.js";
-import { Tool } from "./ToolTypes.js";
+
 
 export class ToolRegistry {
 
 
-    private tools:Tool[] = [
-        ...tools
-    ];
+    private tools: Map<string, Tool> = new Map();
 
 
 
-    registerTool(tool:Tool){
+    constructor() {
 
-        this.tools.push(tool);
+        this.registerNativeTools();
 
     }
 
 
 
-    public getToolDefinitions() {
+
+    private registerNativeTools() {
 
 
-        return this.tools.map(tool => ({
+        for (const tool of tools) {
 
-            type:"function",
 
-            function:{
-                name:tool.name,
+            this.register(tool);
+
+
+        }
+
+    }
+
+
+
+
+
+    register(
+        tool: Tool
+    ) {
+
+
+        this.tools.set(
+            tool.name,
+            tool
+        );
+
+
+    }
+
+
+
+
+
+    getToolDefinitions() {
+
+
+        return Array.from(
+            this.tools.values()
+        )
+        .map(tool => ({
+
+
+            type: "function",
+
+
+            function: {
+
+
+                name: tool.name,
+
 
                 description:
-                tool.description,
+                    tool.description,
+
 
                 parameters:
-                tool.parameters
+                    tool.parameters
+
+
             }
+
 
         }));
 
+
     }
 
 
 
 
-    public async executeTool(
+
+    async executeTool(
         name:string,
         args:any
-    ){
+    ) {
 
 
         const tool =
-            this.tools.find(
-                t=>t.name===name
-            );
+            this.tools.get(name);
+
 
 
         if(!tool){
 
             throw new Error(
-                `Tool ${name} not found`
+                `Tool not found: ${name}`
             );
 
         }
 
 
-        return await tool.execute(args);
+
+        return await tool.execute(
+            args
+        );
 
 
     }
 
-}
 
+
+
+
+    listTools(){
+
+        return Array.from(
+            this.tools.keys()
+        );
+
+    }
+
+
+}

@@ -1,20 +1,21 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import os from "node:os";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
 
-import { MCPClient } from "./MCPClient.js";
-import { MCPToolLoader } from "../tools/MCPToolLoader.js";
-import { ToolRegistry } from "../tools/ToolRegistry.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 
 interface MCPServerConfig {
+
+    name: string;
+
     command: string;
-    args: string[];
-}
 
+    args?: string[];
 
-interface MCPConfig {
-    servers: Record<string, MCPServerConfig>;
+    env?: Record<string, string>;
+
 }
 
 
@@ -22,100 +23,223 @@ interface MCPConfig {
 export class MCPManager {
 
 
-    private clients: MCPClient[] = [];
+    private configPath =
+        path.join(
+            os.homedir(),
+            ".automation-agent",
+            "mcp.json"
+        );
+
+
+
+    private servers: MCPServerConfig[] = [];
+
+
+
+    private connectedServers =
+        new Map<string, Client>();
+
 
 
 
     constructor(
-        private readonly toolRegistry: ToolRegistry
-    ) {}
+        private toolRegistry?: any
+    ) {
+
+    }
+
 
 
 
     async initialize() {
 
-
-        const config =
-            await this.loadConfig();
-
-
-
-        for (const serverName of Object.keys(config.servers)) {
-
-
-            const server =
-                config.servers[serverName];
-
-
-
-            console.log(
-                `Starting MCP server: ${serverName}`
-            );
-
-
-
-            const client =
-                new MCPClient();
-
-
-
-            await client.connect(
-                server.command,
-                server.args
-            );
-
-
-
-            const loader =
-                new MCPToolLoader(
-                    client,
-                    this.toolRegistry
-                );
-
-
-
-            await loader.load();
-
-
-
-            this.clients.push(client);
-
-        }
-
-
-        console.log(
-            "All MCP tools loaded"
-        );
+        await this.loadConfig();
 
     }
 
 
 
 
-
-    private async loadConfig(): Promise<MCPConfig> {
-
-
-        const configPath =
-            path.join(
-                os.homedir(),
-                ".automation-agent",
-                "mcp.json"
-            );
-
+    private async loadConfig() {
 
 
         const content =
-            await readFile(
-                configPath,
+            await fs.readFile(
+                this.configPath,
                 "utf-8"
             );
 
 
+        const config =
+            JSON.parse(content);
 
-        return JSON.parse(content);
+
+
+        this.servers =
+            Object.entries(
+                config.servers || {}
+            )
+            .map(
+                ([name, value]: any) => ({
+
+                    name,
+
+                    command: value.command,
+
+                    args: value.args || [],
+
+                    env: value.env || {}
+
+                })
+            );
 
     }
+
+
+
+
+    async getServers() {
+
+
+        if(this.servers.length === 0){
+
+            await this.loadConfig();
+
+        }
+
+
+        return this.servers;
+
+    }
+
+
+
+
+
+    async connectServer(
+        serverName:string
+    ){
+
+
+        if(
+            this.connectedServers.has(serverName)
+        ){
+
+            return this.connectedServers.get(
+                serverName
+            );
+
+        }
+
+
+
+        const server =
+            this.servers.find(
+                s => s.name === serverName
+            );
+
+
+
+        if(!server){
+
+            throw new Error(
+                `MCP server not found: ${serverName}`
+            );
+
+        }
+
+
+
+
+        const transport =
+            new StdioClientTransport({
+
+                command: server.command,
+
+                args: server.args,
+
+
+                env: Object.fromEntries(
+                    Object.entries({
+
+                        ...process.env,
+
+                        ...server.env
+
+                    })
+                    .filter(
+                        ([,value]) =>
+                            value !== undefined
+                    )
+                ) as Record<string,string>
+
+            });
+
+
+
+
+
+        const client =
+            new Client({
+
+                name:"automation-agent",
+
+                version:"1.0.0"
+
+            });
+
+
+
+
+
+        await client.connect(
+            transport
+        );
+
+
+
+
+        this.connectedServers.set(
+            serverName,
+            client
+        );
+
+
+
+        return client;
+
+    }
+
+
+
+
+
+
+    getStatus(){
+
+
+        return {
+
+            totalServers:
+                this.servers.length,
+
+
+            servers:
+                this.servers.map(server => ({
+
+                    name:server.name,
+
+                    connected:
+                        this.connectedServers.has(
+                            server.name
+                        )
+
+                }))
+
+        };
+
+    }
+
 
 
 }

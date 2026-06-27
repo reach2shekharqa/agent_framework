@@ -1,15 +1,15 @@
 import { AI } from "../ai/AI.js";
 import { ProjectTools } from "../tools/ProjectTools.js";
 import { ToolRegistry } from "../tools/ToolRegistry.js";
-import { MCPClient } from "../mcp/MCPClient.js";
-import { MCPToolLoader } from "../tools/MCPToolLoader.js";
+
 
 import { MCPManager } from "../mcp/MCPManager.js";
 
 
+
 export class AutomationAgent {
 
-
+    private mcpManager?: MCPManager;
     private ai = new AI();
 
 
@@ -20,32 +20,39 @@ export class AutomationAgent {
 
 
 
-async initialize() {
+    async initialize() {
 
 
-    if (this.mcpInitialized) {
-        return;
+        if (this.mcpInitialized) {
+            return;
+        }
+
+
+
+        const mcpManager =
+            new MCPManager(
+                this.toolRegistry
+            );
+
+
+
+        await mcpManager.initialize();
+
+
+
+        this.mcpInitialized = true;
+
     }
 
 
-
-    const mcpManager =
-        new MCPManager(
-            this.toolRegistry
-        );
+    getMCPStatus() {
 
 
+        return this.mcpManager
+            ? this.mcpManager.getStatus()
+            : {};
 
-    await mcpManager.initialize();
-
-
-
-    this.mcpInitialized = true;
-
-}
-
-
-
+    }
 
 
     async run(input: string) {
@@ -104,15 +111,15 @@ ${memory.analyzedAt}
 
 Files:
 ${memory.files
-                    .slice(0, 100)
-                    .join("\n")}
+                        .slice(0, 100)
+                        .join("\n")}
 
 Package:
 ${JSON.stringify(
-                    memory.package,
-                    null,
-                    2
-                )}
+                            memory.package,
+                            null,
+                            2
+                        )}
 
 Use this information before using project analysis tools.
 

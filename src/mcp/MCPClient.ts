@@ -7,6 +7,18 @@ export class MCPClient {
     private client!: Client;
 
 
+
+    setClient(
+        client: Client
+    ){
+
+        this.client = client;
+
+    }
+
+
+
+
     async connect(
         command:string,
         args:string[]
@@ -14,20 +26,29 @@ export class MCPClient {
 
         const transport =
             new StdioClientTransport({
+
                 command,
+
                 args
+
             });
 
 
+
         this.client = new Client(
+
             {
                 name:"automation-agent",
+
                 version:"1.0.0"
             },
+
             {
                 capabilities:{}
             }
+
         );
+
 
 
         await this.client.connect(
@@ -36,10 +57,12 @@ export class MCPClient {
 
 
         console.log(
-          "Connected MCP server"
+            "Connected MCP server"
         );
 
     }
+
+
 
 
 
@@ -51,14 +74,19 @@ export class MCPClient {
 
 
 
+
+
     async callTool(
         name:string,
         args:any
     ){
 
         return await this.client.callTool({
+
             name,
+
             arguments:args
+
         });
 
     }
