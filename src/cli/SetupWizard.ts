@@ -6,7 +6,13 @@ import { UserConfig } from "../config/UserConfig.js";
 
 export async function runSetupWizard() {
 
-    console.log("\n🤖 Automation Agent Setup\n");
+    console.log(`
+╔══════════════════════════════╗
+║     Automation Agent       ║
+║     AI Automation Assistant   ║
+║     Setup Wizard              ║
+╚══════════════════════════════╝
+`);
 
 
     const { provider } = await inquirer.prompt([

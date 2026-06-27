@@ -88,4 +88,14 @@ async function bootstrap() {
 
 
 
-bootstrap();
+bootstrap()
+    .catch((error) => {
+
+        console.error(
+            "❌ Automation Agent failed:",
+            error.message
+        );
+
+        process.exit(1);
+
+    });

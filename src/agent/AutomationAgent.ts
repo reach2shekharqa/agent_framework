@@ -36,6 +36,9 @@ Rules:
 Memory Rules:
 - Use existing project knowledge when available.
 - Do not call analyzeProject again if the required information already exists in memory.
+- Do not repeat information already available in memory.
+- Avoid duplicate explanations.
+- Answer only what the user asked.
 `
             }
 

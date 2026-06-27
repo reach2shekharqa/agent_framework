@@ -1,14 +1,36 @@
 {
-  "name": "autoamtion-agent",
+  "name": "automation-agent",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
   "scripts": {
     "dev": "tsx src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reach2shekharqa"
+  },
+  "homepage": "https://github.com/reach2shekharqa",
+  "keywords": [
+    "ai-agent",
+    "automation",
+    "testing",
+    "playwright",
+    "selenium",
+    "qa",
+    "llm"
+  ],
+  "bin": {
+    "automation-agent": "./bin/automation-agent.js"
+  },
   "author": "",
   "license": "ISC",
   "type": "module",
