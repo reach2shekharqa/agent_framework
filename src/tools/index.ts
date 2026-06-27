@@ -4,6 +4,10 @@ import {
     searchCodeTool
 } from "./FileTools.js";
 
+import {
+ analyzeProjectTool
+} from "./ProjectTools.js";
+
 
 export const tools = [
 
@@ -15,7 +19,9 @@ export const tools = [
 
 ];
 
-
+tools.push(
+    analyzeProjectTool
+);
 
 export const toolDefinitions =
     tools.map(tool => ({

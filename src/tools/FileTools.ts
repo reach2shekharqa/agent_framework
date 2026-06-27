@@ -31,17 +31,31 @@ export const listDirectoryTool: Tool = {
 
     async execute(args) {
 
+        try {
 
-        const files =
-            await fs.readdir(
-                args.path || "."
-            );
+            const files =
+                await fs.readdir(
+                    args.path || "."
+                );
 
 
-        return {
-            files
-        };
+            return {
+                path: args.path || ".",
+                files
+            };
 
+
+        }
+        catch (error) {
+
+            return {
+
+                error:
+                    `Directory not found: ${args.path}`
+
+            };
+
+        }
 
     }
 
@@ -68,7 +82,8 @@ export const readFileTool: Tool = {
         properties: {
 
             path: {
-                type: "string"
+                type: "string",
+                description: "Path of the file to read"
             }
 
         },
@@ -84,20 +99,38 @@ export const readFileTool: Tool = {
     async execute(args) {
 
 
-        const content =
-            await fs.readFile(
-                args.path,
-                "utf-8"
-            );
+        try {
 
 
-        return {
+            const content =
+                await fs.readFile(
+                    args.path,
+                    "utf-8"
+                );
 
-            file: args.path,
 
-            content
+            return {
 
-        };
+                file: args.path,
+
+                content
+
+            };
+
+
+        }
+        catch (error) {
+
+
+            return {
+
+                error:
+                    `File not found or cannot read: ${args.path}`
+
+            };
+
+
+        }
 
 
     }
