@@ -52,14 +52,14 @@ export async function runSetupWizard() {
                     name: "baseUrl",
                     message: "Ollama URL:",
                     default:
-                    "http://localhost:11434/v1/chat/completions"
+                        "http://localhost:11434/v1/chat/completions"
                 },
                 {
                     type: "input",
                     name: "model",
                     message: "Ollama Model:",
                     default:
-                    "qwen2.5:14b"
+                        "qwen2.5:14b"
                 }
             ]);
 
@@ -87,7 +87,7 @@ export async function runSetupWizard() {
                     name: "baseUrl",
                     message: "Groq API URL:",
                     default:
-                    "https://api.groq.com/openai/v1/chat/completions"
+                        "https://api.groq.com/openai/v1/chat/completions"
                 },
                 {
                     type: "password",
@@ -99,7 +99,7 @@ export async function runSetupWizard() {
                     name: "model",
                     message: "Groq Model:",
                     default:
-                    "llama-3.3-70b-versatile"
+                        "llama-3.3-70b-versatile"
                 }
             ]);
 
@@ -133,23 +133,15 @@ export async function runSetupWizard() {
                     type: "input",
                     name: "model",
                     message: "NVIDIA Model:",
-                    default:
-                    "qwen/qwen3.5-122b-a10b"
+                    default: "qwen/qwen3.5-122b-a10b"
                 }
             ]);
 
-
             config = {
-
                 provider: "nvidia",
-
-                baseUrl:
-                "https://integrate.api.nvidia.com/v1/chat/completions",
-
+                baseUrl: "https://integrate.api.nvidia.com/v1",
                 model: answers.model,
-
                 apiKey: answers.apiKey
-
             };
 
             break;

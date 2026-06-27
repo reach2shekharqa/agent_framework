@@ -1,30 +1,20 @@
 import { AI } from "../ai/AI.js";
-import {
-    executeTool,
-    toolDefinitions
-} from "../tools/index.js";
-
 import { ProjectTools } from "../tools/ProjectTools.js";
-
+import { ToolRegistry } from "../tools/ToolRegistry.js";
 
 export class AutomationAgent {
 
+    private ai = new AI();
 
-    private ai =
-        new AI();
-
-
+    private toolRegistry = new ToolRegistry();
 
     async run(input: string) {
 
-
         const messages: any[] = [
-
 
             {
                 role: "system",
-                content:
-`
+                content: `
 You are an AI automation engineer.
 
 Rules:
@@ -44,23 +34,17 @@ Memory Rules:
 
         ];
 
-
-
         // Load existing project memory
         const memory =
             ProjectTools.loadProjectMemory();
 
-
-
-        if(memory){
-
+        if (memory) {
 
             messages.push({
 
-                role:"system",
+                role: "system",
 
-                content:
-`
+                content: `
 Existing Project Memory:
 
 Project:
@@ -69,12 +53,10 @@ ${memory.path}
 Analyzed At:
 ${memory.analyzedAt}
 
-
 Files:
 ${memory.files
-    .slice(0,100)
+    .slice(0, 100)
     .join("\n")}
-
 
 Package:
 ${JSON.stringify(
@@ -85,11 +67,10 @@ ${JSON.stringify(
 
 Use this information before using project analysis tools.
 `
+
             });
 
         }
-
-
 
         messages.push({
 
@@ -99,69 +80,46 @@ Use this information before using project analysis tools.
 
         });
 
-
-
         while (true) {
-
 
             const response =
                 await this.ai.chat(
                     messages,
-                    toolDefinitions
+                    this.toolRegistry.getToolDefinitions()
                 );
-
-
 
             if (response.tool_calls) {
 
-
-
                 messages.push(response);
-
-
 
                 for (const call of response.tool_calls) {
 
-
                     const result =
-                        await executeTool(
+                        await this.toolRegistry.executeTool(
                             call.function.name,
-                            JSON.parse(
-                                call.function.arguments
-                            )
+                            JSON.parse(call.function.arguments)
                         );
-
-
 
                     messages.push({
 
                         role: "tool",
 
-                        tool_call_id:
-                            call.id,
+                        tool_call_id: call.id,
 
-                        content:
-                            JSON.stringify(result)
+                        content: JSON.stringify(result)
 
                     });
 
-
                 }
-
 
                 continue;
 
             }
 
-
-
             return response.content;
-
 
         }
 
-
     }
-
 
 }
