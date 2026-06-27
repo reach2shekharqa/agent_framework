@@ -5,9 +5,14 @@ import {
 } from "./FileTools.js";
 
 import {
- analyzeProjectTool
+    analyzeProjectTool,
+    getProjectMemoryTool
 } from "./ProjectTools.js";
 
+export {
+    analyzeProjectTool,
+    getProjectMemoryTool
+} from "./ProjectTools.js";
 
 export const tools = [
 
@@ -15,7 +20,11 @@ export const tools = [
 
     readFileTool,
 
-    searchCodeTool
+    searchCodeTool,
+
+    analyzeProjectTool,
+    
+    getProjectMemoryTool
 
 ];
 

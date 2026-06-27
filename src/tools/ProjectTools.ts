@@ -188,4 +188,34 @@ export const analyzeProjectTool = {
         );
 
     }
+
+    
+};
+
+export const getProjectMemoryTool = {
+
+    name: "getProjectMemory",
+
+    description:
+        "Returns previously analyzed project information from memory",
+
+    parameters:{
+        type:"object",
+        properties:{}
+    },
+
+
+    execute: async()=>{
+
+        const memory = ProjectTools.loadProjectMemory();
+
+        if(!memory){
+            return {
+                message:"No project memory found"
+            };
+        }
+
+
+        return memory;
+    }
 };

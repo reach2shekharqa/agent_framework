@@ -4,6 +4,8 @@ import {
     toolDefinitions
 } from "../tools/index.js";
 
+import { ProjectTools } from "../tools/ProjectTools.js";
+
 
 export class AutomationAgent {
 
@@ -18,10 +20,11 @@ export class AutomationAgent {
 
         const messages: any[] = [
 
+
             {
                 role: "system",
                 content:
-                    `
+`
 You are an AI automation engineer.
 
 Rules:
@@ -29,15 +32,69 @@ Rules:
 - Never claim a framework unless it appears in tool output.
 - Summarize only information returned by tools.
 - Keep answers concise.
-`
-            },
 
-            {
-                role: "user",
-                content: input
+Memory Rules:
+- Use existing project knowledge when available.
+- Do not call analyzeProject again if the required information already exists in memory.
+`
             }
 
         ];
+
+
+
+        // Load existing project memory
+        const memory =
+            ProjectTools.loadProjectMemory();
+
+
+
+        if(memory){
+
+
+            messages.push({
+
+                role:"system",
+
+                content:
+`
+Existing Project Memory:
+
+Project:
+${memory.path}
+
+Analyzed At:
+${memory.analyzedAt}
+
+
+Files:
+${memory.files
+    .slice(0,100)
+    .join("\n")}
+
+
+Package:
+${JSON.stringify(
+    memory.package,
+    null,
+    2
+)}
+
+Use this information before using project analysis tools.
+`
+            });
+
+        }
+
+
+
+        messages.push({
+
+            role: "user",
+
+            content: input
+
+        });
 
 
 
@@ -45,13 +102,10 @@ Rules:
 
 
             const response =
-                await this.ai.chat(messages, toolDefinitions);
-
-
-            // console.log(
-            //     "AI RESPONSE:",
-            //     JSON.stringify(response, null, 2)
-            // );
+                await this.ai.chat(
+                    messages,
+                    toolDefinitions
+                );
 
 
 
@@ -104,7 +158,7 @@ Rules:
         }
 
 
-
     }
+
 
 }
