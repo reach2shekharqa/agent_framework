@@ -2,7 +2,7 @@ import { AI } from "../ai/AI.js";
 import {
     executeTool,
     toolDefinitions
-} from "../tools/tools.js";
+} from "../tools/index.js";
 
 
 export class AutomationAgent {
