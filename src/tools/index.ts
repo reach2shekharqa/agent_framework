@@ -14,6 +14,11 @@ export {
     getProjectMemoryTool
 } from "./ProjectTools.js";
 
+
+import { runCommand } from "./runCommand.js";
+
+
+
 export const tools = [
 
     listDirectoryTool,
@@ -24,6 +29,10 @@ export const tools = [
 
     analyzeProjectTool,
 
-    getProjectMemoryTool
+    getProjectMemoryTool,
+
+    runCommand,
+
+
 
 ];

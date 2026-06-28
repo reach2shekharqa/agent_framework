@@ -5,13 +5,10 @@ import { Tool } from "./ToolTypes.js";
 
 export const listDirectoryTool: Tool = {
 
-
     name: "listDirectory",
-
 
     description:
         "List files and folders in a directory",
-
 
     parameters: {
 
@@ -19,39 +16,46 @@ export const listDirectoryTool: Tool = {
 
         properties: {
 
-            path: {
-                type: "string"
+            directoryPath: {
+
+                type: "string",
+
+                description: "Directory path to list"
+
             }
 
         }
 
     },
 
-
-
     async execute(args) {
+
+        const directoryPath =
+            args.directoryPath ?? args.path ?? ".";
 
         try {
 
             const files =
-                await fs.readdir(
-                    args.path || "."
-                );
-
+                await fs.readdir(directoryPath);
 
             return {
-                path: args.path || ".",
+
+                success: true,
+
+                directoryPath,
+
                 files
+
             };
 
-
         }
-        catch (error) {
+        catch {
 
             return {
 
-                error:
-                    `Directory not found: ${args.path}`
+                success: false,
+
+                error: `Directory not found: ${directoryPath}`
 
             };
 
@@ -60,20 +64,15 @@ export const listDirectoryTool: Tool = {
     }
 
 };
-
-
 
 
 
 export const readFileTool: Tool = {
 
-
     name: "readFile",
 
-
     description:
-        "Read contents of a file",
-
+        "Read the contents of a file",
 
     parameters: {
 
@@ -81,63 +80,75 @@ export const readFileTool: Tool = {
 
         properties: {
 
-            path: {
+            filePath: {
+
                 type: "string",
-                description: "Path of the file to read"
+
+                description: "Absolute or relative path of the file"
+
             }
 
         },
 
         required: [
-            "path"
+
+            "filePath"
+
         ]
 
     },
 
-
-
     async execute(args) {
 
+        const filePath =
+            args.filePath ?? args.path;
 
-        try {
-
-
-            const content =
-                await fs.readFile(
-                    args.path,
-                    "utf-8"
-                );
-
+        if (!filePath) {
 
             return {
 
-                file: args.path,
+                success: false,
+
+                error: "Missing required parameter: filePath"
+
+            };
+
+        }
+
+        try {
+
+            const content =
+                await fs.readFile(
+                    filePath,
+                    "utf-8"
+                );
+
+            return {
+
+                success: true,
+
+                filePath,
 
                 content
 
             };
 
-
         }
-        catch (error) {
-
+        catch {
 
             return {
 
-                error:
-                    `File not found or cannot read: ${args.path}`
+                success: false,
+
+                error: `File not found or cannot read: ${filePath}`
 
             };
 
-
         }
-
 
     }
 
 };
-
-
 
 
 
